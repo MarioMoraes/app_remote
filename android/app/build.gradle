@@ -4,8 +4,11 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+// Defina a versão do Kotlin explicitamente
+def kotlin_version = '1.9.0' // Use uma versão recente e estável
+
 android {
-    namespace = "br.com.bluestormstudios.app_remote" // Apenas um namespace
+    namespace = "br.com.bluestormstudios.app_remote"
     
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -36,4 +39,10 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    // Adicione esta linha se você tiver a biblioteca Scrcpy disponível
+    // implementation 'com.genymobile.scrcpy:scrcpy-server:1.18' // Descomente se necessário
 }
