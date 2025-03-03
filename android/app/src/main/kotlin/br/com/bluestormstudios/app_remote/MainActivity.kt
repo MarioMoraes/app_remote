@@ -7,8 +7,8 @@ import io.flutter.plugin.common.MethodChannel
 import android.content.Intent
 import android.os.Bundle
 import android.view.Surface
-import io.flutter.embedding.engine.renderer.FlutterRenderer
 import io.flutter.view.TextureRegistry
+import br.com.bluestormstudios.app_remote.Scrcpy // Importação adicionada
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "scrcpy_channel"
@@ -23,7 +23,6 @@ class MainActivity : FlutterActivity() {
                     val videoBitrate = call.argument<Int>("videoBitrate") ?: 8000000
                     val maxHeight = call.argument<Int>("maxHeight") ?: 1920
                     
-                    // Criar uma entrada de textura
                     textureEntry = flutterEngine.renderer.createSurfaceTexture()
                     val surfaceTexture = textureEntry!!.surfaceTexture()
                     val surface = Surface(surfaceTexture)
@@ -35,7 +34,6 @@ class MainActivity : FlutterActivity() {
                     }
                     startService(intent)
                     
-                    // Iniciar o Scrcpy com a Surface
                     val scrcpy = Scrcpy()
                     scrcpy.start(surface, serverAdr, maxHeight, videoBitrate)
 
