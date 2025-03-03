@@ -2,40 +2,35 @@ package br.com.bluestormstudios.app_remote;
 
 import android.content.Context;
 import android.util.Log;
-import com.genymobile.scrcpy.wrappers.ServiceManager;
 
 public class SendCommands {
     private static final String TAG = "SendCommands";
-    private ServiceManager serviceManager;
 
-    public SendCommands() {
-        serviceManager = new ServiceManager();
-    }
-
-    public int SendAdbCommands(Context context, byte[] fileBase64, String serverAdr, String local_ip, int videoBitrate, int MaxHeight) {
+    public int SendAdbCommands(Context context, byte[] fileBase64, String serverAdr, String localIp, int videoBitrate, int maxHeight) {
         try {
-            String[] Command_push = {"shell", "mkdir", "-p", "/data/local/tmp/scrcpy"};
-            String[] Command_push2 = {"push", fileBase64 == null ? "scrcpy-server.jar" : new String(fileBase64), "/data/local/tmp/scrcpy/scrcpy-server.jar"};
-            String[] Command_forward = {"forward", "tcp:5000", "tcp:5000"};
-            String[] Command_start_server = {"shell", "CLASSPATH=/data/local/tmp/scrcpy/scrcpy-server.jar", "app_process", "/", "com.genymobile.scrcpy.Server", "1.18", String.valueOf(Log.getLogLevel()), String.valueOf(MaxHeight), String.valueOf(videoBitrate), "5000", "false", "false"};
+            String adbPath = "adb";
+            Process process;
 
-            serviceManager.getAdb().executeShellCommand(Command_push);
-            Thread.sleep(500);
-            if (fileBase64 == null) {
-                serviceManager.getAdb().executeShellCommand(Command_push2);
-            } else {
-                serviceManager.getAdb().pushFile(context, Command_push2[1], Command_push2[2]);
-            }
-            Thread.sleep(500);
-            serviceManager.getAdb().executeShellCommand(Command_forward);
-            Thread.sleep(500);
-            Runtime.getRuntime().exec("adb -s " + serverAdr + " shell am force-stop com.genymobile.scrcpy");
-            Thread.sleep(500);
-            serviceManager.getAdb().executeShellCommandAsync(Command_start_server);
+            // Criar diretório
+            process = Runtime.getRuntime().exec(new String[]{adbPath, "-s", serverAdr, "shell", "mkdir", "-p", "/data/local/tmp/scrcpy"});
+            process.waitFor();
+
+            // Enviar o JAR
+            process = Runtime.getRuntime().exec(new String[]{adbPath, "-s", serverAdr, "push", "/data/local/tmp/scrcpy/scrcpy-server.jar"});
+            process.waitFor();
+
+            // Configurar encaminhamento de porta
+            process = Runtime.getRuntime().exec(new String[]{adbPath, "-s", serverAdr, "forward", "tcp:5000", "tcp:5000"});
+            process.waitFor();
+
+            // Iniciar o servidor Scrcpy
+            String cmd = "CLASSPATH=/data/local/tmp/scrcpy/scrcpy-server.jar app_process / com.genymobile.scrcpy.Server 1.18 0 " + maxHeight + " " + videoBitrate + " 5000 false false";
+            process = Runtime.getRuntime().exec(new String[]{adbPath, "-s", serverAdr, "shell", cmd});
+            process.waitFor();
 
             return 0;
         } catch (Exception e) {
-            Log.e(TAG, "ADB command failed: " + e.getMessage());
+            Log.e(TAG, "Erro ao executar comandos ADB: " + e.getMessage());
             return -1;
         }
     }

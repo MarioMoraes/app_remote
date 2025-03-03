@@ -8,10 +8,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Surface
 import io.flutter.embedding.engine.renderer.FlutterRenderer
+import io.flutter.view.TextureRegistry
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "scrcpy_channel"
-    private var textureId: Long? = null
+    private var textureEntry: TextureRegistry.SurfaceTextureEntry? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -22,9 +23,9 @@ class MainActivity : FlutterActivity() {
                     val videoBitrate = call.argument<Int>("videoBitrate") ?: 8000000
                     val maxHeight = call.argument<Int>("maxHeight") ?: 1920
                     
-                    // Criar uma Texture para o Flutter
-                    textureId = flutterEngine.renderer.createTexture()
-                    val surfaceTexture = flutterEngine.renderer.getSurfaceTexture(textureId!!)
+                    // Criar uma entrada de textura
+                    textureEntry = flutterEngine.renderer.createSurfaceTexture()
+                    val surfaceTexture = textureEntry!!.surfaceTexture()
                     val surface = Surface(surfaceTexture)
 
                     val intent = Intent(this, Scrcpy::class.java).apply {
@@ -38,10 +39,15 @@ class MainActivity : FlutterActivity() {
                     val scrcpy = Scrcpy()
                     scrcpy.start(surface, serverAdr, maxHeight, videoBitrate)
 
-                    result.success(textureId)
+                    result.success(textureEntry!!.id())
                 }
                 else -> result.notImplemented()
             }
         }
+    }
+
+    override fun onDestroy() {
+        textureEntry?.release()
+        super.onDestroy()
     }
 }

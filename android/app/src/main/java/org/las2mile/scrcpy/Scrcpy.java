@@ -6,6 +6,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Surface;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -30,25 +32,29 @@ public class Scrcpy extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (!isRunning) {
             loadServerFile();
-            String serverAdr = intent.getStringExtra("serverAdr");
-            int videoBitrate = intent.getIntExtra("videoBitrate", 8000000);
-            int maxHeight = intent.getIntExtra("maxHeight", 1920);
-            String localIp = wifiIpAddress();
-            sendCommands = new SendCommands();
-
-            if (serverAdr != null && !serverAdr.isEmpty()) {
-                int result = sendCommands.SendAdbCommands(this, fileBase64, serverAdr, localIp, videoBitrate, maxHeight);
-                if (result == 0) {
-                    Log.d("Scrcpy", "Scrcpy iniciado com sucesso");
-                    isRunning = true;
-                } else {
-                    Log.e("Scrcpy", "Falha na conexão ADB ou rede");
-                }
-            } else {
-                Log.e("Scrcpy", "Endereço do servidor vazio");
-            }
+            isRunning = true;
         }
         return START_STICKY;
+    }
+
+    public void start(Surface surface, String serverAdr, int height, int videoBitrate) {
+        String localIp = wifiIpAddress();
+        sendCommands = new SendCommands();
+
+        if (serverAdr != null && !serverAdr.isEmpty()) {
+            int result = sendCommands.SendAdbCommands(this, fileBase64, serverAdr, localIp, videoBitrate, height);
+            if (result == 0) {
+                Log.d("Scrcpy", "Iniciando decodificação na Surface: " + surface);
+                // Aqui você deve integrar a lógica de Decoder do scrcpy-android
+                // Por exemplo, iniciar um Decoder para exibir o vídeo na Surface
+                Decoder decoder = new Decoder(surface, serverAdr);
+                decoder.start();
+            } else {
+                Log.e("Scrcpy", "Falha na conexão ADB ou rede");
+            }
+        } else {
+            Log.e("Scrcpy", "Endereço do servidor vazio");
+        }
     }
 
     private void loadServerFile() {
