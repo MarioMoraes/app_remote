@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -17,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _startScrcpy() async {
     try {
       final result = await platform.invokeMethod('startScrcpy', {
-        'serverAdr': '192.168.1.100', // Substitua pelo IP real
+        'serverAdr': '192.168.0.3', // Substitua pelo IP real
         'videoBitrate': 8000000,
         'maxHeight': 1920,
       });
@@ -33,8 +35,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: Text("App Remote")),
+        appBar: AppBar(title: const Text("App Remote")),
         body: Column(
           children: [
             if (textureId != null)
@@ -43,7 +46,7 @@ class _MyAppState extends State<MyApp> {
               ),
             ElevatedButton(
               onPressed: _startScrcpy,
-              child: Text("Iniciar Scrcpy"),
+              child: const Text("Iniciar Scrcpy"),
             ),
           ],
         ),

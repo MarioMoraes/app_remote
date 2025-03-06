@@ -24,7 +24,7 @@ public class SendCommands {
             process.waitFor();
 
             // Iniciar o servidor Scrcpy
-            String cmd = "CLASSPATH=/data/local/tmp/scrcpy/scrcpy-server.jar app_process / com.genymobile.scrcpy.Server 1.18 0 " + maxHeight + " " + videoBitrate + " 5000 false false";
+            String cmd = "CLASSPATH=/data/local/tmp/scrcpy/scrcpy-server.jar app_process / org.las2mile.scrcpy.Server " + maxHeight + " " + videoBitrate + " 5000 false false";
             process = Runtime.getRuntime().exec(new String[]{adbPath, "-s", serverAdr, "shell", cmd});
             process.waitFor();
 
