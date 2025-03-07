@@ -19,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _startScrcpy() async {
     try {
       final result = await platform.invokeMethod('startScrcpy', {
-        'serverAdr': '192.168.0.3', // Substitua pelo IP real
+        'serverAdr': '192.168.0.8', // Substitua pelo IP real
         'videoBitrate': 8000000,
         'maxHeight': 1920,
       });
