@@ -34,6 +34,8 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+
+   
 }
 
 flutter {
@@ -42,5 +44,5 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation files('libs/scrcpy-server.jar')
+    // implementation files('libs/scrcpy-server.jar')
 }
